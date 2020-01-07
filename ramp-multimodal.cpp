@@ -3,6 +3,7 @@ using namespace al;
 
 struct MyApp : App {
   float value;
+  float frequency;
 
   void onCreate() override {
     //
@@ -12,10 +13,6 @@ struct MyApp : App {
 
   void onAnimate(double dt) override {
     //
-
-    value += dt;
-    if (value > 1)  //
-      value -= 1;
   }
 
   void onDraw(Graphics& g) override {
@@ -24,11 +21,12 @@ struct MyApp : App {
   }
 
   void onSound(AudioIOData& io) override {
-    //
-    io();
-    io.out(0) = io.out(1) = 1;
     while (io()) {
-      io.out(0) = io.out(1) = 0;
+      value += frequency / 44100;
+      if (value > 1)  //
+        value -= 1;
+
+      io.out(0) = io.out(1) = value;
     }
   }
 
@@ -41,6 +39,8 @@ struct MyApp : App {
   bool onMouseMove(const Mouse& m) override {
     //
     printf("%d,%d\n", m.x(), m.y());
+
+    frequency = 880 * m.y() / height();
     return false;
   }
 };
