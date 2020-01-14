@@ -12,6 +12,6 @@ layout(location = 0) out vec4 fragmentColor;
 
 void main() {
   float a = texture(alphaTexture, fragment.textureCoordinate).r;
-  if (a < 0.05) discard;
+  // if (a < 0.05) discard;
   fragmentColor = vec4(fragment.color.xyz, a);
 }

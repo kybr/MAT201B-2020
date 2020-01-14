@@ -96,6 +96,7 @@ struct AlloApp : App {
       which++;
       if (which >= mesh.vertices().size()) which = 0;
     }
+
     nav().faceToward(mesh.vertices()[which], Vec3d(0, 1, 0), 0.01);
     nav().nudgeF(0.007);
   }
