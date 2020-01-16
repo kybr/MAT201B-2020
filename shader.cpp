@@ -1,6 +1,4 @@
 #include "al/app/al_App.hpp"
-#include "al/graphics/al_Image.hpp"  // al::Image
-#include "al/math/al_Random.hpp"
 #include "al/ui/al_ControlGUI.hpp"
 
 using namespace al;
@@ -25,11 +23,13 @@ const char* fragmentCode = R"(
 #version 400
 layout(location = 0) out vec4 fragmentColor;
 uniform vec3 color;
+uniform float time;
 void main() {
   // https://people.freedesktop.org/~idr/OpenGL_tutorials/03-fragment-intro.html
+  float distance = 350 + sin(time * 3) * 500;
   vec2 pos = mod(gl_FragCoord.xy, vec2(50.0)) - vec2(25.0);
   float dist_squared = dot(pos, pos);
-  fragmentColor = (dist_squared < 400.0) ? vec4(color, 1.0) : vec4(1 - color.r, color.g * color.g, 1 - color.b * color.b, 1.0);
+  fragmentColor = (dist_squared < distance) ? vec4(color, 1.0) : vec4(1 - color.r, color.g * color.g, 1 - color.b * color.b, 1.0);
 }
 )";
 
@@ -54,13 +54,15 @@ struct AlloApp : App {
     nav().pos(0, 0, 5);
   }
 
-  void onAnimate(double dt) override {}
+  double time = 0;
+  void onAnimate(double dt) override { time += dt; }
 
   void onDraw(Graphics& g) override {
     g.clear(color);
     g.shader(pointShader);
     Color c(color);
     g.shader().uniform("color", Vec3f(1 - c.r, 1 - c.g, 1 - c.b));
+    g.shader().uniform("time", (float)time);
     g.draw(mesh);
     gui.draw(g);
   }
