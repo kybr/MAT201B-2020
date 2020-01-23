@@ -12,15 +12,21 @@ Vec3f rv(float scale) {
   return Vec3f(rnd::uniformS(), rnd::uniformS(), rnd::uniformS()) * scale;
 }
 
-string slurp(string fileName);
+string slurp(string fileName);  // forward declaration
 
 struct AlloApp : App {
+  // add more GUI here
   Parameter pointSize{"/pointSize", "", 1.0, "", 0.0, 2.0};
   Parameter timeStep{"/timeStep", "", 0.1, "", 0.01, 0.6};
-
   ControlGUI gui;
+
   ShaderProgram pointShader;
-  Mesh mesh;
+  Mesh mesh;  // vector<Vec3f> position is inside mesh
+
+  // typedef al::Vec<float, 3> Vec3f;
+  // typedef std::vector<Vec3f> Vertices;
+
+  //  simulation state
   vector<Vec3f> velocity;
   vector<Vec3f> acceleration;
   vector<float> mass;
@@ -36,25 +42,30 @@ struct AlloApp : App {
                         slurp("../point-fragment.glsl"),
                         slurp("../point-geometry.glsl"));
 
-    // set initial conditions
+    // set initial conditions of the simulation
+    //
 
     // c++11 "lambda" function
     auto rc = []() { return HSV(rnd::uniform(), 1.0f, 1.0f); };
 
     mesh.primitive(Mesh::POINTS);
-    for (int r = 0; r < 1000; r++) {
+    // does 1000 work on your system? how many can you make before you get a low
+    // frame rate? do you need to use <1000?
+    for (int _ = 0; _ < 1000; _++) {
       mesh.vertex(rv(5));
       mesh.color(rc());
 
-      //      float m = rnd::uniform(3.0, 0.5);
-      float m = 3 + rnd::normal() * 0.1;
+      // float m = rnd::uniform(3.0, 0.5);
+      float m = 3 + rnd::normal() * 0.7;
       if (m < 0.5) m = 0.5;
       mass.push_back(m);
-      mesh.texCoord(pow(m, 1.0f / 3), 0);
+
+      // using a simplified volume/size relationship
+      mesh.texCoord(pow(m, 1.0f / 3), 0);  // s, t
 
       // separate state arrays
       velocity.push_back(rv(0.1));
-      acceleration.push_back(rv(0));
+      acceleration.push_back(rv(1));
     }
 
     nav().pos(0, 0, 10);
@@ -69,10 +80,25 @@ struct AlloApp : App {
 
     // Calculate forces
 
+    // pair-wise and equal but opposite
+    // nested for loop to visit each pair once
+    // O(n*n)
+    //
+
     // drag
     for (int i = 0; i < velocity.size(); i++) {
-      acceleration[i] -= velocity[i] * 0.07;
+      acceleration[i] -= velocity[i] * 0.1;
     }
+
+    // Vec3f has
+    // • +=
+    // • -=
+    // • .normalize()
+    // • .normalize(float scale)
+    // • .mag()
+    // • .magSqr()
+    // • .dot(Vec3f f)
+    // • .cross(Vec3f f)
 
     // Integration
     //
@@ -84,7 +110,7 @@ struct AlloApp : App {
 
       // Explicit (or "forward") Euler integration would look like this:
       // position[i] += velocity[i] * dt;
-      // velocity[i] += acceleration[i] * dt;
+      // velocity[i] += acceleration[i] / mass[i] * dt;
     }
 
     // clear all accelerations (IMPORTANT!!)
@@ -99,7 +125,8 @@ struct AlloApp : App {
     if (k.key() == '1') {
       // introduce some "random" forces
       for (int i = 0; i < velocity.size(); i++) {
-        acceleration[i] = rv(1);
+        // F = ma
+        acceleration[i] = rv(1) / mass[i];
       }
     }
 
