@@ -56,7 +56,7 @@ struct AlloApp : App {
       mesh.color(rc());
 
       // float m = rnd::uniform(3.0, 0.5);
-      float m = 3 + rnd::normal() * 0.7;
+      float m = 3 + rnd::normal() / 2;
       if (m < 0.5) m = 0.5;
       mass.push_back(m);
 
@@ -134,9 +134,11 @@ struct AlloApp : App {
   }
 
   void onDraw(Graphics& g) override {
-    g.clear(0.01);
+    g.clear(0.3);
     g.shader(pointShader);
     g.shader().uniform("pointSize", pointSize / 100);
+    g.blending(true);
+    g.blendModeTrans();
     g.depthTesting(true);
     g.draw(mesh);
     gui.draw(g);

@@ -14,7 +14,10 @@ in Vertex {
 }
 vertex[];
 
-out Fragment { vec4 color; }
+out Fragment {
+  vec4 color;
+  vec2 mapping;
+}
 fragment;
 
 void main() {
@@ -26,18 +29,22 @@ void main() {
 
   gl_Position = m * (v + vec4(-r, -r, 0.0, 0.0));
   fragment.color = vertex[0].color;
+  fragment.mapping = vec2(-1.0, -1.0);
   EmitVertex();
 
   gl_Position = m * (v + vec4(r, -r, 0.0, 0.0));
   fragment.color = vertex[0].color;
+  fragment.mapping = vec2(1.0, -1.0);
   EmitVertex();
 
   gl_Position = m * (v + vec4(-r, r, 0.0, 0.0));
   fragment.color = vertex[0].color;
+  fragment.mapping = vec2(-1.0, 1.0);
   EmitVertex();
 
   gl_Position = m * (v + vec4(r, r, 0.0, 0.0));
   fragment.color = vertex[0].color;
+  fragment.mapping = vec2(1.0, 1.0);
   EmitVertex();
 
   EndPrimitive();
