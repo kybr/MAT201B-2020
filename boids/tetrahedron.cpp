@@ -23,7 +23,7 @@ struct AlloApp : App {
 
     mesh.vertex(0, 0, 0);
     mesh.normal(1, 0, 0);
-    mesh.color(0, 1, 0);
+    mesh.color(0, 1, 0);  // green?
 
     nav().pos(0, 0, 5);
   }
@@ -31,16 +31,18 @@ struct AlloApp : App {
   double t = 0;
   void onAnimate(double dt) override {
     t += dt;
+    //
+    // rotate up about the x axis
     mesh.colors()[0].g = sin(t);  // y
     mesh.colors()[0].b = cos(t);  // z
   }
 
   void onDraw(Graphics& g) override {
     g.clear(0.1, 0.1, 0.1);
-    // gl::depthTesting(true); // or g.depthTesting(true);
-    // gl::blending(true); // or g.blending(true);
-    // gl::blendTrans(); // or g.blendModeTrans();
-    g.rotate(t * 66, 0, 1, 0);
+    gl::depthTesting(true);  // g.depthTesting(true);
+    // gl::blending(true);         // g.blending(true);
+    // gl::blendTrans();           // g.blendModeTrans();
+    g.rotate(t * 66, 0, 1, 0);  // angle in degrees
     g.shader(shader);
     g.shader().uniform("size", 1.0);
     g.shader().uniform("ratio", 0.2);

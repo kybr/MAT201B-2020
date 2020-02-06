@@ -14,6 +14,13 @@ Vec3f rv(float scale = 1.0f) {
 
 string slurp(string fileName);  // forward declaration
 
+// suggested structure for Agent
+//
+struct Agent : Pose {
+  Vec3f heading, center;  // of the local flock! averages
+  unsigned flockCount{1};
+};
+
 struct AlloApp : App {
   // add more GUI here
   Parameter moveRate{"/moveRate", "", 1.0, "", 0.0, 2.0};
@@ -26,7 +33,7 @@ struct AlloApp : App {
   ShaderProgram shader;
   Mesh mesh;
 
-  vector<Pose> agent;
+  vector<Agent> agent;
 
   void onCreate() override {
     // add more GUI here
@@ -42,14 +49,14 @@ struct AlloApp : App {
     mesh.primitive(Mesh::POINTS);
 
     for (int _ = 0; _ < 1000; _++) {
-      Pose p;
-      p.pos(rv());
-      p.faceToward(rv());
-      agent.push_back(p);
-
-      mesh.vertex(p.pos());
-      mesh.normal(p.uf());
-      Vec3f up(p.uu());
+      Agent a;
+      a.pos(rv());
+      a.faceToward(rv());
+      agent.push_back(a);
+      //
+      mesh.vertex(a.pos());
+      mesh.normal(a.uf());
+      const Vec3f& up(a.uu());
       mesh.color(up.x, up.y, up.z);
     }
 
@@ -57,16 +64,6 @@ struct AlloApp : App {
   }
 
   void onAnimate(double dt) override {
-    // suggested data structure
-    //
-    struct Data {
-      Vec3f heading, center;
-      unsigned neighborCount{0};
-      float distance{0};
-    };
-    vector<Data> data;
-    data.resize(agent.size());
-
     // for each pair of agents
     //
     int N = agent.size();
@@ -75,15 +72,32 @@ struct AlloApp : App {
         float distance = (agent[j].pos() - agent[i].pos()).mag();
         if (distance < localRadius) {
           // put code here
+          //
         }
       }
 
+    // only once the above loop is done do we have good data on average headings
+    // and centers
+
     //
+    // put code here
+    //
+
+    // point agents in random direction (REMOVE THIS CODE)
     //
     for (unsigned i = 0; i < N; i++) {
       agent[i].faceToward(rv(), 0.03 * turnRate);
-      agent[i].pos() += agent[i].uf() * moveRate * 0.002;
+    }
 
+    // move the agents along (KEEP THIS CODE)
+    //
+    for (unsigned i = 0; i < N; i++) {
+      agent[i].pos() += agent[i].uf() * moveRate * 0.002;
+    }
+
+    // respawn agents if they go too far (MAYBE KEEP)
+    //
+    for (unsigned i = 0; i < N; i++) {
       if (agent[i].pos().mag() > 1.1) {
         agent[i].pos(rv());
         agent[i].faceToward(rv());
@@ -92,11 +106,11 @@ struct AlloApp : App {
 
     // visualize the agents
     //
-    vector<Vec3f>& m(mesh.vertices());
+    vector<Vec3f>& v(mesh.vertices());
     vector<Vec3f>& n(mesh.normals());
     vector<Color>& c(mesh.colors());
     for (unsigned i = 0; i < N; i++) {
-      m[i] = agent[i].pos();
+      v[i] = agent[i].pos();
       n[i] = agent[i].uf();
       const Vec3d& up(agent[i].uu());
       c[i].set(up.x, up.y, up.z);

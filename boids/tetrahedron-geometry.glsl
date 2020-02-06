@@ -7,6 +7,7 @@ in Vertex {
   vec3 position;
   vec3 forward;
   vec3 up;
+  //vec3 color;
 }
 vertex[];
 
@@ -44,21 +45,9 @@ void main() {
   vec3 over = cross(up, forward) * ratio;
 
   vec4 a = pm * vec4(position + forward, 1.0);
-  vec4 b =
-      pm *
-      vec4(position +
-               (rotationMatrix(forward, radians(60)) * vec4(over, 0.0)).xyz,
-           1.0);
-  vec4 c =
-      pm *
-      vec4(position +
-               (rotationMatrix(forward, radians(180)) * vec4(over, 0.0)).xyz,
-           1.0);
-  vec4 d =
-      pm *
-      vec4(position +
-               (rotationMatrix(forward, radians(300)) * vec4(over, 0.0)).xyz,
-           1.0);
+  vec4 b = pm * vec4(position + (rotationMatrix(forward, radians(60)) * vec4(over, 0.0)).xyz, 1.0);
+  vec4 c = pm * vec4(position + (rotationMatrix(forward, radians(180)) * vec4(over, 0.0)).xyz, 1.0);
+  vec4 d = pm * vec4(position + (rotationMatrix(forward, radians(300)) * vec4(over, 0.0)).xyz, 1.0);
 
   gl_Position = a;
   fragment.color = vec4(1.0, 1.0, 1.0, 1.0);
