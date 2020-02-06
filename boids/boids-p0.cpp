@@ -19,6 +19,8 @@ struct AlloApp : App {
   Parameter moveRate{"/moveRate", "", 1.0, "", 0.0, 2.0};
   Parameter turnRate{"/turnRate", "", 1.0, "", 0.0, 2.0};
   Parameter localRadius{"/localRadius", "", 0.4, "", 0.01, 0.9};
+  Parameter size{"/size", "", 1.0, "", 0.0, 2.0};
+  Parameter ratio{"/ratio", "", 1.0, "", 0.0, 2.0};
   ControlGUI gui;
 
   ShaderProgram shader;
@@ -28,7 +30,7 @@ struct AlloApp : App {
 
   void onCreate() override {
     // add more GUI here
-    gui << moveRate << turnRate << localRadius;
+    gui << moveRate << turnRate << localRadius << size << ratio;
     gui.init();
     navControl().useMouse(false);
 
@@ -103,11 +105,12 @@ struct AlloApp : App {
 
   void onDraw(Graphics& g) override {
     g.clear(0.1, 0.1, 0.1);
-    gl::blending(true);
-    gl::blendTrans();
+    // gl::depthTesting(true); // or g.depthTesting(true);
+    // gl::blending(true); // or g.blending(true);
+    // gl::blendTrans(); // or g.blendModeTrans();
     g.shader(shader);
-    g.shader().uniform("size", 0.03);
-    g.shader().uniform("ratio", 0.2);
+    g.shader().uniform("size", size * 0.03);
+    g.shader().uniform("ratio", ratio * 0.2);
     g.draw(mesh);
     gui.draw(g);
   }

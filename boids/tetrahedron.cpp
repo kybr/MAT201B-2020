@@ -37,9 +37,10 @@ struct AlloApp : App {
 
   void onDraw(Graphics& g) override {
     g.clear(0.1, 0.1, 0.1);
+    // gl::depthTesting(true); // or g.depthTesting(true);
+    // gl::blending(true); // or g.blending(true);
+    // gl::blendTrans(); // or g.blendModeTrans();
     g.rotate(t * 66, 0, 1, 0);
-    gl::blending(true);
-    gl::depthTesting(true);
     g.shader(shader);
     g.shader().uniform("size", 1.0);
     g.shader().uniform("ratio", 0.2);
