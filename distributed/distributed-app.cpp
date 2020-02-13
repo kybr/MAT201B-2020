@@ -1,10 +1,9 @@
-#include <string>
-
 #include "al/app/al_DistributedApp.hpp"  // #include "al/app/al_App.hpp"
 #include "al/graphics/al_Font.hpp"
 #include "al/graphics/al_Shapes.hpp"
 #include "al/ui/al_ControlGUI.hpp"
 #include "al/ui/al_Parameter.hpp"
+#include "al_ext/statedistribution/al_CuttleboneStateSimulationDomain.hpp"
 
 using namespace al;
 
@@ -16,8 +15,17 @@ using namespace al;
 // overall state of the application.
 //
 
+struct Agent : Pose {
+  // all the positions of the boids
+  // all the headings of the boids
+  // all the UP of the boids
+};
+const int N = 1000;
+
 struct SharedState {
   uint16_t frameCount{0};
+  // vector<Agent> agent;
+  Agent agent[N];  // probably copy from a vector<Agent>
 };
 
 // Inherit from DistributedApp and template it on the shared state data struct
@@ -40,7 +48,19 @@ class MyApp : public DistributedAppWithState<SharedState> {
 
   ControlGUI gui;
 
+  // You can keep a pointer to the cuttlebone domain
+  // This can be useful to ask the domain if it is a sender or receiver
+  std::shared_ptr<CuttleboneStateSimulationDomain<SharedState>>
+      cuttleboneDomain;
+
   void onCreate() override {
+    cuttleboneDomain =
+        CuttleboneStateSimulationDomain<SharedState>::enableCuttlebone(this);
+    if (!cuttleboneDomain) {
+      std::cerr << "ERROR: Could not start Cuttlebone. Quitting." << std::endl;
+      quit();
+    }
+
     // Set the camera to view the scene
     nav().pos(Vec3d(0, 0, 8));
     // Prepare mesh to draw a cone
@@ -58,7 +78,9 @@ class MyApp : public DistributedAppWithState<SharedState> {
 
     //    font.loadDefault(24);
 
-    if (!font.load(Font::defaultFont().c_str(), 54, 1024)) {
+    // font.load("Courier", 18, 18);
+    // if (!font.load(Font::defaultFont().c_str(), 54, 1024)) {
+    if (!font.load("/Users/ky/Library/Fonts/FiraCode-Regular.otf", 54, 1024)) {
       std::cerr << "Could not load font! Aborting." << std::endl;
       quit();
     }
@@ -66,9 +88,10 @@ class MyApp : public DistributedAppWithState<SharedState> {
   }
 
   void onAnimate(double dt) override {
-    if (isPrimary()) {
+    if (cuttleboneDomain->isSender()) {
       state().frameCount++;
       navControl().active(!isImguiUsingInput());
+    } else {
     }
 
     font.write(fontMesh, std::to_string(state().frameCount).c_str(), 1.0f);
