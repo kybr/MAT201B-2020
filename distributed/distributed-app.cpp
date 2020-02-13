@@ -79,8 +79,7 @@ class MyApp : public DistributedAppWithState<SharedState> {
     //    font.loadDefault(24);
 
     // font.load("Courier", 18, 18);
-    // if (!font.load(Font::defaultFont().c_str(), 54, 1024)) {
-    if (!font.load("/Users/ky/Library/Fonts/FiraCode-Regular.otf", 54, 1024)) {
+    if (!font.load(Font::defaultFont().c_str(), 54, 1024)) {
       std::cerr << "Could not load font! Aborting." << std::endl;
       quit();
     }
