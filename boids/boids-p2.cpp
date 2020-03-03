@@ -18,6 +18,7 @@ HashSpace space(6, N);
 
 struct Agent : Pose {
   Vec3f heading, center;
+  Vec3f vel, acc;
   unsigned flockCount{1};
 };
 
@@ -79,6 +80,7 @@ struct AlloApp : App {
       agent[i].center = agent[i].pos();
       agent[i].heading = agent[i].uf();
       agent[i].flockCount = 1;
+      agent[i].acc.zero();
     }
 
     float sum = 0;
@@ -123,10 +125,19 @@ struct AlloApp : App {
       agent[i].faceToward(agent[i].pos() - agent[i].center, 0.003 * turnRate);
     }
 
-    // move the agents along (KEEP THIS CODE)
+    // enact the Boids algorithm
     //
     for (int i = 0; i < N; i++) {
-      agent[i].pos() += agent[i].uf() * moveRate * 0.02;
+      agent[i].acc += agent[i].uf() * moveRate * 0.002;
+      agent[i].acc += -agent[i].vel * 0.1;  // drag
+    }
+
+    // Integration
+    //
+    for (int i = 0; i < N; i++) {
+      // "backward" Euler integration
+      agent[i].vel += agent[i].acc;
+      agent[i].pos() += agent[i].vel;
     }
 
     for (unsigned i = 0; i < N; i++) {
