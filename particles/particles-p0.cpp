@@ -137,9 +137,9 @@ struct AlloApp : App {
     g.clear(0.3);
     g.shader(pointShader);
     g.shader().uniform("pointSize", pointSize / 100);
-    g.blending(true);
-    g.blendModeTrans();
-    g.depthTesting(true);
+    gl::blending(true);
+    gl::blendTrans();
+    gl::depthTesting(true);
     g.draw(mesh);
     gui.draw(g);
   }

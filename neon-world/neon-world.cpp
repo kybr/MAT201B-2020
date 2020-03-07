@@ -124,10 +124,10 @@ struct AlloApp : App {
       onResize();
     }
     renderTarget.bind();  ///////////////////////////////////////////////
-    g.clear(0.37);
+    g.clear(Color(0.37));
 
-    g.blending(true);
-    g.blendModeAdd();
+    gl::blending(true);
+    gl::blendAdd();
 
     lineTexture.bind();
     g.shader(lineShader);
@@ -143,7 +143,7 @@ struct AlloApp : App {
 
     renderTarget.unbind();  /////////////////////////////////////////////
 
-    g.blending(false);
+    gl::blending(false);
     // throw the rendering onto the screen
     // g.clear(1);
     g.quadViewport(rendered);
