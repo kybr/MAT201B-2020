@@ -18,8 +18,12 @@ out Fragment {
 fragment;
 
 uniform int ID;
+uniform int M;
 
 void main() {
+  if ((vertex[0].id % M) == ((ID + M - 1) % M))
+    return;
+
   mat4 m = al_ProjectionMatrix;  // rename to make lines shorter
   vec4 a = gl_in[0].gl_Position;
   vec4 b = gl_in[1].gl_Position;
