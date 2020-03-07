@@ -65,7 +65,9 @@ struct AlloApp : App {
   }
 
   int index = 0;
+  double t = 0;
   void onAnimate(double dt) override {
+    t += dt;
     index++;
     if (index == M)  //
       index = 0;
@@ -83,10 +85,11 @@ struct AlloApp : App {
   }
 
   void onDraw(Graphics& g) override {
+    g.rotate(5 * t, Vec3f(0, 1, 0));
     g.clear(Color(0.3));
-    // gl::blending(true);
-    // gl::blendTrans();
-    // gl::depthTesting(true);
+    gl::blending(true);
+    gl::blendTrans();
+    gl::depthTesting(true);
 
     g.shader(trailShader);
     g.shader().uniform("ID", index);
