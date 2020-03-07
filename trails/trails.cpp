@@ -10,8 +10,8 @@ Vec3f rv(float scale) {
   return Vec3f(rnd::uniformS(), rnd::uniformS(), rnd::uniformS()) * scale;
 }
 
-const int N = 3;
-const int M = 100;
+const int N = 13;
+const int M = 123;
 
 string slurp(string fileName) {
   fstream file(fileName);

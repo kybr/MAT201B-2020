@@ -21,7 +21,11 @@ uniform int ID;
 uniform int M;
 
 void main() {
+
+  // skip certain connections. not totally correct, but meh...
   if ((vertex[0].id % M) == ID)
+    return;
+  if ((vertex[0].id % M) == M - 1)
     return;
 
   mat4 m = al_ProjectionMatrix;  // rename to make lines shorter

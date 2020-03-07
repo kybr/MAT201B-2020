@@ -40,6 +40,18 @@ struct AlloApp : App {
       mesh.texCoord(0.3, 0.0);
     }
 
+    for (int i = 0; i < M; i++) {
+      mesh.vertex(sin(2 * M_PI * i / M), cos(2 * M_PI * i / M), -1);
+      mesh.color(HSV(1.0f * i / M, 1.0f, 1.0f));
+      mesh.texCoord(0.3, 0.0);
+    }
+
+    for (int i = 0; i < M; i++) {
+      mesh.vertex(sin(2 * M_PI * i / M), cos(2 * M_PI * i / M), -2);
+      mesh.color(HSV(1.0f * i / M, 1.0f, 1.0f));
+      mesh.texCoord(0.3, 0.0);
+    }
+
     pointShader.compile(slurp("../point-vertex.glsl"),
                         slurp("../point-fragment.glsl"),
                         slurp("../point-geometry.glsl"));
