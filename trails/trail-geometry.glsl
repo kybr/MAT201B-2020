@@ -21,7 +21,7 @@ uniform int ID;
 uniform int M;
 
 void main() {
-  if ((vertex[0].id % M) == ((ID + M - 1) % M))
+  if ((vertex[0].id % M) == ID)
     return;
 
   mat4 m = al_ProjectionMatrix;  // rename to make lines shorter

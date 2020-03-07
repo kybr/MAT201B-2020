@@ -10,8 +10,8 @@ Vec3f rv(float scale) {
   return Vec3f(rnd::uniformS(), rnd::uniformS(), rnd::uniformS()) * scale;
 }
 
-const int N = 1;
-const int M = 10;
+const int N = 3;
+const int M = 100;
 
 string slurp(string fileName) {
   fstream file(fileName);
@@ -66,6 +66,10 @@ struct AlloApp : App {
 
   int index = 0;
   void onAnimate(double dt) override {
+    index++;
+    if (index == M)  //
+      index = 0;
+
     vector<Vec3f>& m(mesh.vertices());
 
     for (int i = 0; i < N; i++) {
@@ -76,10 +80,6 @@ struct AlloApp : App {
     for (int i = 0; i < N; i++) {
       h[i * M + index] = m[i];
     }
-
-    index++;
-    if (index >= M)  //
-      index = 0;
   }
 
   void onDraw(Graphics& g) override {

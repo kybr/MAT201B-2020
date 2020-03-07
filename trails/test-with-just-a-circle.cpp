@@ -57,11 +57,11 @@ struct AlloApp : App {
     t += dt;
     if (t > 0.5) {
       t -= 0.5;
-      point.vertices()[0] = mesh.vertices()[id];
-
       id++;
       if (id == M)  //
         id = 0;
+
+      point.vertices()[0] = mesh.vertices()[id];
     }
   }
 
