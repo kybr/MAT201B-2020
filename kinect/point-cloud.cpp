@@ -72,7 +72,7 @@ struct MyApp : App {
     g.shader().uniform("pointSize", 1.0f / 1000);
 
     rgb.bind();
-    g.scale(1.0f / 640, 1.0f / 480, 1.0f / 2047);  //
+    //    g.scale(1.0f / 640, 1.0f / 480, 1.0f / 2047);  //
     g.draw(cloud);
     rgb.unbind();
   }
