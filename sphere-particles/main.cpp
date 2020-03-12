@@ -100,27 +100,25 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
 
       state().background = background;
       state().pointSize = pointSize;
+      state().camera = nav();
 
       // clear all accelerations (IMPORTANT!!)
       for (auto& a : acceleration) a.zero();
 
       navControl().active(!isImguiUsingInput());
     } else {
-    }
-
-    //
-    //
-    //
-    vector<Vec3f>& position(mesh.vertices());
-    for (int i = 0; i < velocity.size(); i++) {
-      position[i] = state().position[i];
+      nav().set(state().camera);
+      vector<Vec3f>& position(mesh.vertices());
+      for (int i = 0; i < velocity.size(); i++) {
+        position[i] = state().position[i];
+      }
     }
   }
 
   void onDraw(Graphics& g) override {
     g.clear(Color(state().background));
     g.shader(pointShader);
-    g.shader().uniform("pointSize", state().pointSize / 100);
+    g.shader().uniform("pointSize", state().pointSize / 20);
     gl::blending(true);
     gl::blendTrans();
     gl::depthTesting(true);
