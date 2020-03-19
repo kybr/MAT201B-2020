@@ -11,20 +11,16 @@ using namespace std;
 string slurp(string fileName);  // forward declaration
 
 struct AlloApp : App {
-  Parameter size{"/size", "", 1.0, "", 0.0, 2.0};
-  Parameter ratio{"/ratio", "", 1.0, "", 0.0, 2.0};
+  Parameter size{"/size", "", 0.3, "", 0.0, 1.0};
+  Parameter ratio{"/ratio", "", 2.0, "", 0.0, 4.0};
   Parameter fade{"/fade", "", 1.0, "", 0.0, 1.0};
-  ParameterInt faceCount{"/faceCount", "", 3, "", 2, 20};
-  Parameter spikiness{"/spikiness", "", 0.0, "", 0.0, 1.0};
   ControlGUI gui;
 
   ShaderProgram shader;
   Mesh mesh;
 
-  Pose agent;
-
   void onCreate() override {
-    gui << size << ratio << fade << faceCount << spikiness;
+    gui << size << ratio << fade;
     gui.init();
     navControl().useMouse(false);
 
@@ -34,47 +30,28 @@ struct AlloApp : App {
 
     mesh.primitive(Mesh::POINTS);
 
-    agent.pos(Vec3f(0, 0, 0));
-    agent.faceToward(Vec3f(1, 1, 1));
-    mesh.vertex(agent.pos());
-    mesh.normal(agent.uf());
-    const Vec3f& up(agent.uu());
-    mesh.color(up.x, up.y, up.z);
-    mesh.texCoord(faceCount, spikiness);
+    auto rv = []() {
+      return Vec3f(rnd::uniformS(), rnd::uniformS(), rnd::uniformS());
+    };
+    auto r = []() { return rnd::uniform(); };
+
+    for (int i = 0; i < 255; i++) {
+      mesh.vertex(rv());
+      mesh.normal(rv().normalize());
+      Vec3f up = rv().normalize();
+      mesh.color(up.x, up.y, up.z);
+      float v = r();
+      mesh.texCoord(v * v * 17 + 3, r());
+    }
 
     nav().pos(0, 0, 4);
   }
-
-  void onAnimate(double dt) override {
-#if 0
-    vector<Vec3f>& v(mesh.vertices());
-    vector<Vec3f>& n(mesh.normals());
-    vector<Color>& c(mesh.colors());
-    for (unsigned i = 0; i < N; i++) {
-      v[i] = agent[i].pos();
-      n[i] = agent[i].uf();
-      const Vec3d& up(agent[i].uu());
-      c[i].set(up.x, up.y, up.z);
-    }
-#endif
-
-    mesh.texCoord2s()[0].x = faceCount;
-    mesh.texCoord2s()[0].y = spikiness;
-
-    angle += 1;
-  }
-
-  double angle = 0;
 
   void onDraw(Graphics& g) override {
     g.clear(Color(0.1));
     gl::depthTesting(true);
     gl::blending(true);
     gl::blendTrans();
-    // gl::faceCulling(true);
-    // gl::faceToCull(GL_FRONT);
-    // gl::faceToCull(GL_BACK);
-    g.rotate(angle, 0, 1, 0);
     g.shader(shader);
     g.shader().uniform("size", size * 0.3);
     g.shader().uniform("fade", fade);
