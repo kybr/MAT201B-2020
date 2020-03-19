@@ -13,7 +13,8 @@ string slurp(string fileName);  // forward declaration
 struct AlloApp : App {
   Parameter size{"/size", "", 1.0, "", 0.0, 2.0};
   Parameter ratio{"/ratio", "", 1.0, "", 0.0, 2.0};
-  ParameterInt faceCount{"/faceCount", "", 3, "", 3, 10};
+  Parameter fade{"/fade", "", 1.0, "", 0.0, 1.0};
+  ParameterInt faceCount{"/faceCount", "", 3, "", 2, 20};
   Parameter spikiness{"/spikiness", "", 0.0, "", 0.0, 1.0};
   ControlGUI gui;
 
@@ -23,7 +24,7 @@ struct AlloApp : App {
   Pose agent;
 
   void onCreate() override {
-    gui << size << ratio << faceCount << spikiness;
+    gui << size << ratio << fade << faceCount << spikiness;
     gui.init();
     navControl().useMouse(false);
 
@@ -59,6 +60,7 @@ struct AlloApp : App {
 
     mesh.texCoord2s()[0].x = faceCount;
     mesh.texCoord2s()[0].y = spikiness;
+
     angle += 1;
   }
 
@@ -69,9 +71,13 @@ struct AlloApp : App {
     gl::depthTesting(true);
     gl::blending(true);
     gl::blendTrans();
+    // gl::faceCulling(true);
+    // gl::faceToCull(GL_FRONT);
+    // gl::faceToCull(GL_BACK);
     g.rotate(angle, 0, 1, 0);
     g.shader(shader);
     g.shader().uniform("size", size * 0.3);
+    g.shader().uniform("fade", fade);
     g.shader().uniform("ratio", ratio * 0.2);
     g.draw(mesh);
     gui.draw(g);
